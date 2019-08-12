@@ -12,14 +12,15 @@ cd difoss-pybase-master
 python setup.py bdist_wheel --universal
 ```
 
-The result should be create `difoss_pybase-0.2.6-py2.py3-none-any.whl` in the directory named `dist` ( The specific version number is determined by `__version__` in `difoss_pybase/__init__.py` ) .
+The result should be create `difoss_pybase-0.2.7-py2.py3-none-any.whl` in the directory named `dist` ( The specific version number is determined by `__version__` in `difoss_pybase/__init__.py` ) .
 
 ## Installing
 
 Copy the wheel file to target machine, and the use `pip` to install:
 
 ```bash
-$ pip install difoss_pybase-0.2.3-py2.py3-none-any.whl
+cd dist/
+pip install difoss_pybase-0.2.7-py2.py3-none-any.whl
 ```
 
 Testing:
