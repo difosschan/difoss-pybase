@@ -1,22 +1,11 @@
 difoss_pybase: Base library in python 3 with my own habit
 ===========================================================
 
-|  | issues|  |stars| |forks| |py2| |py3|
-
-.. |issues| image:: https://img.shields.io/github/issues/difosschan/difoss-pybase
-    :alt: issues
-
-.. |stars| image:: https://img.shields.io/github/stars/difosschan/difoss-pybase
-    :alt: stars
-
-.. |forks| image:: https://img.shields.io/github/forks/difosschan/difoss-pybase
-    :alt: forks
-
-.. |py2| image:: https://img.shields.io/badge/python-2.7-blue
-    :alt: py2
-
-.. |issues| image:: https://img.shields.io/badge/python-3-blue
-    :alt: py3
+![issues](https://img.shields.io/github/issues/difosschan/difoss-pybase)
+![stars](https://img.shields.io/github/stars/difosschan/difoss-pybase)
+![forks](https://img.shields.io/github/forks/difosschan/difoss-pybase)
+![py2](https://img.shields.io/badge/python-2.7-blue)
+![issues](https://img.shields.io/badge/python-3-blue)
 
 This project collect the reusable function(s) and class(es) in my own habit.
 
