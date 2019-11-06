@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-from __future__ import unicode_literals
+
 
 # Use MySQL Connector/Python API
 #import mysql.connector as msc
@@ -28,7 +28,7 @@ class MysqlWrapper( MySQLConnection ):
             'show': 'select'
         }
         self.__types_max_len = 0
-        for k in self.__type_2_function.iterkeys():
+        for k in self.__type_2_function.keys():
             self.__types_max_len = max(self.__types_max_len, len(k))
 
     @staticmethod
@@ -59,7 +59,7 @@ class MysqlWrapper( MySQLConnection ):
         if self.__logger:
             self.__logger.debug(debug_str)
         else:
-            print('[DEBUG] %s' % debug_str)
+            print(('[DEBUG] %s' % debug_str))
 
     def __set_last_descriptions(self, cursor):
         self.__last_descriptions = []
@@ -134,7 +134,7 @@ class MysqlWrapper( MySQLConnection ):
 
     def guess_query_type(self, sql):
         first_word = sql.split()[0].lower() # 1st word in lower of sql
-        if self.__type_2_function.has_key(first_word):
+        if first_word in self.__type_2_function:
             return self.__type_2_function[first_word]
         return first_word
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-from __future__ import unicode_literals
+
 
 from difoss_pybase.common_utils import *
 from difoss_pybase.mysql_wrapper import MysqlWrapper
@@ -15,7 +15,7 @@ class SperatedDatabase(object):
 
         sperated_db_cfg = deep_into_dict( cfg, ['sperated-db'] )
         if sperated_db_cfg:
-            for db_cfg, arr_dbname in sperated_db_cfg.iteritems():
+            for db_cfg, arr_dbname in sperated_db_cfg.items():
                 if not db_cfg in cfg:
                     raise Exception('"%s" field MUST include in json config file, or this something wrong in "sperated-db" field setting.' % db_cfg)
                 tmpDb = MysqlWrapper(logger)

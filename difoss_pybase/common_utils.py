@@ -1,20 +1,12 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-from __future__ import unicode_literals
-
-# ------------------------------------------------------------
-# FUCK the bug in python2.x: ERROR (UnicodeEncodeError): 'ascii' codec can't encode character in position xx: ordinal not in range(128)
-# To prevent it, import this file, or put following 3 line to /usr/lib/python2.7/sitecustomize.py or /etc/python2.7/sitecustomize.py
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 # ------------------------------------------------------------
 import ctypes, os
 # os.path.islink 在 windows 下有问题
 def is_symlink(path):
     FILE_ATTRIBUTE_REPARSE_POINT = 0x0400
-    return os.path.isdir(path) and (ctypes.windll.kernel32.GetFileAttributesW(unicode(path)) & FILE_ATTRIBUTE_REPARSE_POINT)
+    return os.path.isdir(path) and (ctypes.windll.kernel32.GetFileAttributesW(str(path)) & FILE_ATTRIBUTE_REPARSE_POINT)
 
 # ------------------------------------------------------------
 from subprocess import Popen, PIPE, STDOUT
@@ -29,14 +21,13 @@ def run_shell( cmd_str, cwd=None ):
     p.wait()
     stdoutdata, stderrdata = p.communicate()
 
-    # 暂时不支持以下 python3 兼容性代码段 -----------------
-    # from py3 import PY3
-    # if PY3: # process.communicate returns bytes in Python3
-    #    stdoutdata = str(stdoutdata, 'utf-8')
-    #    stderrdata = str(stderrdata, 'utf-8')
-    # else:
-    stdoutdata = str(stdoutdata).decode('raw_unicode_escape')
-    stderrdata = str(stderrdata).decode('raw_unicode_escape')
+    from py3 import PY3
+    if PY3: # process.communicate returns bytes in Python3
+        stdoutdata = str(stdoutdata, 'utf-8')
+        stderrdata = str(stderrdata, 'utf-8')
+    else:
+        stdoutdata = str(stdoutdata).decode('raw_unicode_escape')
+        stderrdata = str(stderrdata).decode('raw_unicode_escape')
 
     stdoutdata = stdoutdata.rstrip('\n')
     stderrdata = stderrdata.rstrip('\n')
@@ -60,21 +51,16 @@ class StringWithComment:
         while rearLine.find('//') >= 0: # 查找“//”
             slashPos = rearLine.find('//')
             cmtPos += slashPos
-            # print 'slashPos: ' + str(slashPos)
             headLine = rearLine[:slashPos]
             while headLine.find('"') >= 0: # 查找“//”前的双引号
                 qtPos = headLine.find('"')
                 if not self.is_escape_opr(headLine[:qtPos]): # 如果双引号没有被转义
                     qtCnt += 1 # 双引号的数量加1
                 headLine = headLine[qtPos+1:]
-                # print qtCnt
             if qtCnt % 2 == 0: # 如果双引号的数量为偶数，则说明“//”是注释标志
-                # print self.instr[:cmtPos]
                 return self.instr[:cmtPos]
             rearLine = rearLine[slashPos+2:]
-            # print rearLine
             cmtPos += 2
-        # print self.instr
         return self.instr
 
     # 判断是否为转义字符
@@ -112,13 +98,13 @@ def read_txt_2_list( filename ):
 # ------------------------------------------------------------
 def print_utf8( utf8_str ):
     if sys.stdin.encoding:
-        print utf8_str.decode('utf8').encode(encoding=sys.stdin.encoding, errors='ignore')
+        print(utf8_str.decode('utf8').encode(encoding=sys.stdin.encoding, errors='ignore'))
     else:
-        print utf8_str
+        print(utf8_str)
 
 # 打印对象的所有属性值
 def print_object(obj, indent=2):
-    print '\n'.join( [ ' '*indent + '%s: %s' % item for item in obj.__dict__.items()] )
+    print('\n'.join( [ ' '*indent + '%s: %s' % item for item in list(obj.__dict__.items())] ))
 
 # 打印进度条
 def view_bar(num, total, ndigits=0, fillwith='>'):
@@ -134,15 +120,15 @@ def view_bar(num, total, ndigits=0, fillwith='>'):
     sys.stdout.write(r)
     sys.stdout.flush()
 
-from console_color import ConsoleColor
+from .console_color import ConsoleColor
 
 def print_comment(s):
     for line in s.splitlines():
-        print '// %s' % line
+        print('// %s' % line)
 
 def print_xxx(s, level_str, color):
     # declare the global variable: g_color
-    if not globals().has_key('g_color'):
+    if 'g_color' not in globals():
         globals()['g_color'] = ConsoleColor()
     global g_color
     sys.stderr.write('%s: %s\n' % (getattr(g_color, color)(level_str), s))
@@ -162,14 +148,14 @@ def print_debug(s, level_str='DEBUG'):
 # 测试相关打印
 def check_test( target_value, test_value, call_str='' ):
     # declare the global variable: g_color
-    if not globals().has_key('g_color'):
+    if 'g_color' not in globals():
         globals()['g_color'] = ConsoleColor()
 
     global g_color
     if test_value == target_value:
-        print '[%s] %s => %s' % ( g_color.green('PASS') , call_str, test_value.__str__() )
+        print('[%s] %s => %s' % ( g_color.green('PASS') , call_str, test_value.__str__() ))
     else:
-        print '[%s] %s => %s, target: %s' % (g_color.red('FAIL'), call_str,  test_value.__str__(), target_value.__str__())
+        print('[%s] %s => %s, target: %s' % (g_color.red('FAIL'), call_str,  test_value.__str__(), target_value.__str__()))
     return test_value == target_value
 
 def unit_test( target_value, eval_str):
@@ -182,7 +168,7 @@ def dir_and_type( obj, depth=0, lines=None, objstr='' ):
     if depth > 5 or not obj:
         return ''
     g = globals()
-    if not g.has_key('g_color'):
+    if 'g_color' not in g:
         g['g_color'] = ConsoleColor()
 
     sub_objs_name = dir(obj)
@@ -201,9 +187,9 @@ def dir_and_type( obj, depth=0, lines=None, objstr='' ):
         sub_obj_type = type(sub_obj)
         sub_obj_typename = str(sub_obj_type)[len("<type '") : -2]
 
-        is_extend = sub_obj_type is types.TypeType
-        is_tuple = sub_obj_type is types.TupleType
-        is_show_detail = sub_obj_type is types.DictType
+        is_extend = sub_obj_type is type
+        is_tuple = sub_obj_type is tuple
+        is_show_detail = sub_obj_type is dict
 
         is_show_doc = sub_obj_type is types.BuiltinFunctionType \
           or sub_obj_type is types.BuiltinMethodType \
@@ -215,7 +201,7 @@ def dir_and_type( obj, depth=0, lines=None, objstr='' ):
             sub_obj_detail = str(sub_obj).decode(sys.stdin.encoding, 'ignore').encode('utf-8')
 
         sub_name_shown = ('|' if depth else '') + '--' * depth + sub_name
-        # print sub_name_shown, sub_obj_typename
+        # print(sub_name_shown, sub_obj_typename)
 
         lines.append( [depth, sub_name, g['g_color'].white_blue(sub_obj_typename) if is_extend else g['g_color'].green(sub_obj_typename), sub_obj_detail] )
 
@@ -233,7 +219,7 @@ def dir_and_type( obj, depth=0, lines=None, objstr='' ):
 #
 # Example:
 # >>> Number = NatureNumEnum([ 'ZERO', 'ONE', 'THREE' ])
-# >>> print (type(Number), Number.ONE)
+# >>> print(type(Number), Number.ONE)
 # (<class '__main__.NatureNumEnum'>, 1)
 #
 class NatureNumEnum(tuple):
@@ -245,7 +231,7 @@ class NatureNumEnum(tuple):
 #
 # Exapmle:
 # >>> Number = FreeEnum( ONE=1, TWO=2, THREE='three' )
-# >>> print (Number.THREE == 3, Number.ONE == 1)
+# >>> print(Number.THREE == 3, Number.ONE == 1)
 # (False, True)
 #
 def FreeEnum(**enums):
@@ -269,7 +255,7 @@ class CtrlC(object):
 
         signal.signal(signal.SIGINT, self.quit)
         signal.signal(signal.SIGTERM, self.quit)
-        print "Had registered the signal processing function."
+        print("Had registered the signal processing function.")
 
     def is_exit(self):
         return self.__exit_flag
@@ -281,7 +267,7 @@ class CtrlC(object):
         pass
 
     def quit(self, signum, frame):
-        print "\nCtrlC.quit() is called."
+        print("\nCtrlC.quit() is called.")
         self.__exit_flag = True
         self.__sem.release()
 
@@ -329,12 +315,12 @@ def deep_into_dict( d, key_list, default=None ):
 
     k = key_list[0]
     if len(key_list) == 1:
-        if d.has_key(k):
+        if k in d:
             return d[k]
         else:
             return default
 
-    if d.has_key(k):
+    if k in d:
         return deep_into_dict( d[k], key_list[1:] )
     return default
 
@@ -343,12 +329,12 @@ CUT_UP_LENGTH = NatureNumEnum( ['LEFT', 'DURING', 'RIGHT'] )
 def cut_up( target_range, basic_range ):
     # # FIXME: 目前用 None 代表【无穷小】，sys.maxint 表示【无穷大】，是否存在隐患。
     b0 = basic_range[0] if len(basic_range) else None           # 除了 None 任何值都比 None 大
-    b1 = basic_range[1] if (len(basic_range) > 1 and basic_range[1] != None) else sys.maxint
+    b1 = basic_range[1] if (len(basic_range) > 1 and basic_range[1] != None) else sys.maxsize
     if b0 > b1:
         b0, b1 = b1, b0
 
     t0 = target_range[0]
-    t1 = target_range[1] if (len(target_range) > 1 and target_range[1] != None) else sys.maxint
+    t1 = target_range[1] if (len(target_range) > 1 and target_range[1] != None) else sys.maxsize
     if t0 > t1:
         t0, t1 = t1, t0
 
@@ -403,7 +389,7 @@ def init_logger(log_cfg, prefix='', sec=None):
         filename = log_cfg['dir'] + "/" + log_filename,
         filemode = 'w')
 
-    if not globals().has_key('g_logger'):
+    if 'g_logger' not in globals():
         globals()['g_logger'] = logging.getLogger()
     return globals()['g_logger']
 
@@ -427,7 +413,7 @@ def log(level_str, msg, *args, **kwargs):
         print_stdout = True # print into stdout when g_logger isn't set
 
     if print_stdout:
-        print("[%s] %s" % (level_str, msg)) # temporary print to stdout
+        print(("[%s] %s" % (level_str, msg))) # temporary print to stdout
 
 # ------------------------------------------------------------
 import json
@@ -451,7 +437,7 @@ def load_json( s ):
     try:
         dstJson = json.loads(dstJsonStr)
     except:
-        print 'load_json(str): found `str` is not a valid json file.'
+        print('load_json(str): found `str` is not a valid json file.')
 
     return dstJson
 
