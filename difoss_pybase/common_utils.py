@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 # ------------------------------------------------------------
-import ctypes, os
+import ctypes, os, sys
 # os.path.islink 在 windows 下有问题
 def is_symlink(path):
     FILE_ATTRIBUTE_REPARSE_POINT = 0x0400
