@@ -17,10 +17,10 @@ The modifications in this branch are minor fixes and cosmetic changes:
 
 * v0.1.0 base version, includes: 
 
-  * **common_utils**,
+  * **common_utils**
   * **console_color**
   * **mysql_wrapper**
-  * **sperated_database** (read/write in sperated mysql DB).
+  * **sperated_database** (read/write in sperated mysql DB)
 
 * v0.2.0 in `common_utils` : add class `StringWithComment`, function `load_json` can filter comment string with c++ style (`//` only by now ).
 
