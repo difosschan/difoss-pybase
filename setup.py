@@ -10,7 +10,7 @@ from difoss_pybase import __version__
 setup (
     name        = 'difoss_pybase',
     version     =  __version__,
-    description = 'Python base library in python 2.7',
+    description = 'Python base library in python 3.7',
     author      = 'Difoss Chan',
     author_email= 'difoss@163.com',
     license     = 'Apache License 2.0',
@@ -19,7 +19,7 @@ setup (
     classifiers = [
         'Operating System :: OS Independent',
         'Natural Language :: Chinese (Simplified)',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Utilities'
     ],
     packages = find_packages()

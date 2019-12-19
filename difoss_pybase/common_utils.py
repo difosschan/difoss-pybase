@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 # ------------------------------------------------------------
-import ctypes, os, sys
+import ctypes, os, sys, io
 # os.path.islink 在 windows 下有问题
 def is_symlink(path):
     FILE_ATTRIBUTE_REPARSE_POINT = 0x0400
@@ -12,27 +12,20 @@ def is_symlink(path):
 from subprocess import Popen, PIPE, STDOUT
 import platform
 # -----------------------------------------
-# @return returncode, stdout, stderr
+# @return return_code, stdout, stderr
 def run_shell( cmd_str, cwd=None ):
     close_fds = not (platform.system() == 'Windows') # 妈逼的 windows 不支持 close_fds=True
 
     p = Popen( cmd_str, shell=True, stdout=PIPE, stderr=PIPE, close_fds=close_fds, cwd=cwd )
 
     p.wait()
-    stdoutdata, stderrdata = p.communicate()
+    stdout_data, stderr_data = p.communicate()
 
-    from py3 import PY3
-    if PY3: # process.communicate returns bytes in Python3
-        stdoutdata = str(stdoutdata, 'utf-8')
-        stderrdata = str(stderrdata, 'utf-8')
-    else:
-        stdoutdata = str(stdoutdata).decode('raw_unicode_escape')
-        stderrdata = str(stderrdata).decode('raw_unicode_escape')
+    stdout_data = str(stdout_data, 'utf-8').rstrip('\n')
+    stderr_data = str(stderr_data, 'utf-8').rstrip('\n')
 
-    stdoutdata = stdoutdata.rstrip('\n')
-    stderrdata = stderrdata.rstrip('\n')
-    returncode = p.returncode
-    return (returncode, stdoutdata, stderrdata)
+    return_code = p.returncode
+    return (return_code, stdout_data, stderr_data)
 
 # ------------------------------------------------------------
 # 用于处理从文件中读出的字符串处理类
@@ -122,35 +115,30 @@ def view_bar(num, total, ndigits=0, fillwith='>'):
 
 from .console_color import ConsoleColor
 
+g_color = ConsoleColor()
+
 def print_comment(s):
     for line in s.splitlines():
         print('// %s' % line)
 
-def print_xxx(s, level_str, color):
-    # declare the global variable: g_color
-    if 'g_color' not in globals():
-        globals()['g_color'] = ConsoleColor()
+def print_xxx(s, level_str, color, file: io.TextIOWrapper=sys.stderr):
     global g_color
-    sys.stderr.write('%s: %s\n' % (getattr(g_color, color)(level_str), s))
+    print('%s: %s' % (getattr(g_color, color)(level_str), s), file=file)
     
-def print_error(s, level_str='ERROR'):
-    print_xxx(s, level_str, 'red')
+def print_error(s, level_str='ERROR', file: io.TextIOWrapper=sys.stderr):
+    print_xxx(s, level_str, 'red', file)
 
-def print_warning(s, level_str='WARING'):
-    print_xxx(s, level_str, 'yellow')
+def print_warning(s, level_str='WARNING', file: io.TextIOWrapper=sys.stderr):
+    print_xxx(s, level_str, 'yellow', file)
 
-def print_info(s, level_str='INFO'):
-    print_xxx(s, level_str, 'cyan')
+def print_info(s, level_str='INFO', file: io.TextIOWrapper=sys.stderr):
+    print_xxx(s, level_str, 'cyan', file)
     
-def print_debug(s, level_str='DEBUG'):
-    print_xxx(s, level_str, 'magenta')
+def print_debug(s, level_str='DEBUG', file: io.TextIOWrapper=sys.stderr):
+    print_xxx(s, level_str, 'magenta', file)
 
 # 测试相关打印
 def check_test( target_value, test_value, call_str='' ):
-    # declare the global variable: g_color
-    if 'g_color' not in globals():
-        globals()['g_color'] = ConsoleColor()
-
     global g_color
     if test_value == target_value:
         print('[%s] %s => %s' % ( g_color.green('PASS') , call_str, test_value.__str__() ))
@@ -167,9 +155,6 @@ import types
 def dir_and_type( obj, depth=0, lines=None, objstr='' ):
     if depth > 5 or not obj:
         return ''
-    g = globals()
-    if 'g_color' not in g:
-        g['g_color'] = ConsoleColor()
 
     sub_objs_name = dir(obj)
     len_shown = 0
@@ -203,7 +188,7 @@ def dir_and_type( obj, depth=0, lines=None, objstr='' ):
         sub_name_shown = ('|' if depth else '') + '--' * depth + sub_name
         # print(sub_name_shown, sub_obj_typename)
 
-        lines.append( [depth, sub_name, g['g_color'].white_blue(sub_obj_typename) if is_extend else g['g_color'].green(sub_obj_typename), sub_obj_detail] )
+        lines.append( [depth, sub_name, g_color.white_blue(sub_obj_typename) if is_extend else g_color.green(sub_obj_typename), sub_obj_detail] )
 
         if is_extend:
             dir_and_type( sub_obj, depth + 1, lines, sub_name)
