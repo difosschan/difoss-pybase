@@ -20,7 +20,9 @@ The modifications in this branch are minor fixes and cosmetic changes:
   * **common_utils**
   * **console_color**
   * **mysql_wrapper**
-  * **sperated_database** (read/write in sperated mysql DB)
+  * **sperated_database**: read/write in sperated mysql DB
+  * **get_opt**
+  * **time_util**: util about time, like `time` in Go.
 
 * v0.2.0 in `common_utils` : add class `StringWithComment`, function `load_json` can filter comment string with c++ style (`//` only by now ).
 
@@ -39,7 +41,15 @@ The modifications in this branch are minor fixes and cosmetic changes:
   
 * v0.3.0 Updated to support Python 3. ( So glad to do this because the setuptools improvements make the installation process very simple! )
 
+* v0.3.1
+  - Enhance functions like `print_` in `common_utils`.
 
+* v0.3.2
+  - Add `get_opt` to let parse `sys.argv` more easy.
+
+* v0.3.3
+  - Add `time_util`
+    - Transplant function `time.ParseDuration` in GO language into Python version.
 
 ## How to use -- build & install
 
