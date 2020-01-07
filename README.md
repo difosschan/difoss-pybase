@@ -55,6 +55,7 @@ The modifications in this branch are minor fixes and cosmetic changes:
 
 ```bash
 cd difoss-pybase
+pip install -r requirements.txt
 python setup.py build
 python setup.py install
 ```
@@ -66,9 +67,13 @@ $ python
 Python 3.7.4 (default, Sep 24 2019, 10:39:30)
 [GCC 4.9.4] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> from difoss_pybase.common_utils import load_json
->>> load_json('{"bless":"you"}')
-{'bless': 'you'}
+>>> from difoss_pybase.common_utils import print_debug, print_warning
+>>> print_debug('hello')
+DEBUG: hello
+>>> print_debug(123, 'My Colorful Debug Title')
+My Colorful Test Title: 123
+>>> print_warning(123, 'My Colorful Warning Title')
+My Colorful Test Title: 123
 ```
 
 It works !
