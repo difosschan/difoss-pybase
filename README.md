@@ -1,4 +1,4 @@
-difoss_pybase: Base library in python 3 with my own habit
+difoss_pybase: Base library in python 3 to make the world easier
 ===========================================================
 
 ![issues](https://img.shields.io/github/issues/difosschan/difoss-pybase)
@@ -7,7 +7,7 @@ difoss_pybase: Base library in python 3 with my own habit
 ![py2](https://img.shields.io/badge/python-2.7-blue)
 ![issues](https://img.shields.io/badge/python-3-blue)
 
-This project collect the reusable function(s) and class(es) in my own habit.
+This project collect the reusable function(s) and class(es) to make the world easier.
 
 
 Changes
